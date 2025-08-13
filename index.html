@@ -451,12 +451,25 @@
                         formatter: (value, context) => {
                             const total = moduleData[modules[context.dataIndex]].totalStudents;
                             const percentage = ((value / total) * 100).toFixed(1);
-                            return `${value}\n${percentage}%`;
+                            return value > 0 ? `${value}\n${percentage}%` : ''; // Hide labels for zero values
                         },
                         font: { size: 16, weight: 'bold' },
                         color: '#333',
-                        anchor: 'center',
-                        align: 'center'
+                        anchor: (context) => {
+                            if (context.dataset.label === 'Aprobados') return 'end';
+                            if (context.dataset.label === 'Asistentes Reprobados') return 'center';
+                            return 'start'; // Inasistentes
+                        },
+                        align: (context) => {
+                            if (context.dataset.label === 'Aprobados') return 'top';
+                            if (context.dataset.label === 'Asistentes Reprobados') return 'center';
+                            return 'bottom'; // Inasistentes
+                        },
+                        offset: (context) => {
+                            if (context.dataset.label === 'Aprobados') return 10;
+                            if (context.dataset.label === 'Asistentes Reprobados') return 5;
+                            return 10; // Inasistentes
+                        }
                     },
                     tooltip: {
                         callbacks: {
