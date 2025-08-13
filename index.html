@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis Estadístico - CAIU 2025-I</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0/dist/chartjs-plugin-datalabels.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header h2 {
+            font-size: 1.5em;
+            font-weight: 300;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 25px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .chart-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+        
+        .chart-container h3 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 1.3em;
+            text-align: center;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .chart-wrapper {
+            position: relative;
+            height: 400px;
+        }
+        
+        .large-chart {
+            grid-column: 1 / -1;
+        }
+        
+        .large-chart .chart-wrapper {
+            height: 500px;
+        }
+        
+        .stats-summary {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            grid-column: 1 / -1;
+            margin-bottom: 20px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Universidad Nacional de las Ciencias</h1>
+        <h2>Dr. Humberto Fernández-Morán</h2>
+        <p>Análisis Estadístico - Curso de Acompañamiento a la Iniciación Universitaria (CAIU) 2025-I</p>
+    </div>
+
+    <div class="stats-summary">
+        <h3 style="text-align: center; margin-bottom: 25px; color: #333;">Resumen General por Módulos</h3>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">4</div>
+                <div class="stat-label">Módulos Analizados</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">84.65%</div>
+                <div class="stat-label">Tasa de Aprobación Promedio</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">12.04%</div>
+                <div class="stat-label">Tasa de Deserción Promedio</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">17.00</div>
+                <div class="stat-label">Promedio General</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard">
+        <div class="chart-container large-chart">
+            <h3>📊 Comparación de Tasas de Aprobación por Módulo</h3>
+            <div class="chart-wrapper">
+                <canvas id="approvalChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <h3>📈 Tasas de Deserción por Módulo</h3>
+            <div class="chart-wrapper">
+                <canvas id="dropoutChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <h3>📏 Variabilidad del Rendimiento (Desviación Estándar)</h3>
+            <div class="chart-wrapper">
+                <canvas id="variabilityChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-container large-chart">
+            <h3>👥 Distribución de Estudiantes por Estado Académico</h3>
+            <div class="chart-wrapper">
+                <canvas id="distributionChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <h3>🎯 Módulo I: Habilidades Lingüísticas</h3>
+            <div class="chart-wrapper">
+                <canvas id="module1Chart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <h3>🎯 Módulo II: Filosofía de las Ciencias</h3>
+            <div class="chart-wrapper">
+                <canvas id="module3Chart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <h3>💻 Módulo III: Herramientas Tecnológicas</h3>
+            <div class="chart-wrapper">
+                <canvas id="module4Chart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <h3>🧮 Módulo IV: Lenguaje Lógico Matemático</h3>
+            <div class="chart-wrapper">
+                <canvas id="module5Chart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Register the ChartDataLabels plugin
+        Chart.register(ChartDataLabels);
+
+        // Data from the university analysis
+        const moduleData = {
+            'Habilidades Lingüísticas': {
+                totalStudents: 505,
+                approved: 429,
+                failed: 76,
+                absent: 72,
+                attendedFailed: 4,
+                attended: 433,
+                approvalRate: 84.95,
+                average: 18.00,
+                stdDev: 2.43,
+                dropoutRate: 14.26
+            },
+            'Filosofía de las Ciencias': {
+                totalStudents: 494,
+                approved: 430,
+                failed: 64,
+                absent: 61,
+                attendedFailed: 3,
+                attended: 433,
+                approvalRate: 85.15,
+                average: 18.00,
+                stdDev: 2.12,
+                dropoutRate: 12.08
+            },
+            'Herramientas Tecnológicas': {
+                totalStudents: 505,
+                approved: 430,
+                failed: 75,
+                absent: 68,
+                attendedFailed: 7,
+                attended: 437,
+                approvalRate: 85.15,
+                average: 18.00,
+                stdDev: 2.41,
+                dropoutRate: 13.47
+            },
+            'Lenguaje Lógico Matemático': {
+                totalStudents: 492,
+                approved: 410,
+                failed: 82,
+                absent: 41,
+                attendedFailed: 41,
+                attended: 451,
+                approvalRate: 83.33,
+                average: 14.00,
+                stdDev: 3.38,
+                dropoutRate: 8.33
+            }
+        };
+
+        const modules = Object.keys(moduleData);
+        const colors = ['#4299e1', '#48bb78', '#ed8936', '#9f7aea'];
+        const gradients = [
+            'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+            'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+            'linear-gradient(135deg, #9f7aea 0%, #6b46c1 100%)'
+        ];
+
+        // Chart.js default configuration
+        Chart.defaults.font.family = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
+        Chart.defaults.font.size = 12;
+
+        // 1. Approval Rates Comparison
+        const approvalCtx = document.getElementById('approvalChart').getContext('2d');
+        new Chart(approvalCtx, {
+            type: 'bar',
+            data: {
+                labels: modules,
+                datasets: [{
+                    label: 'Tasa de Aprobación (%)',
+                    data: modules.map(mod => moduleData[mod].approvalRate),
+                    backgroundColor: colors,
+                    borderColor: colors.map(color => color + 'dd'),
+                    borderWidth: 2,
+                    borderRadius: 8,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: (context) => `${context.parsed.y.toFixed(2)}% (${moduleData[modules[context.dataIndex]].approved} estudiantes)`
+                        }
+                    },
+                    datalabels: {
+                        anchor: 'end',
+                        align: 'top',
+                        formatter: (value, context) => `${value.toFixed(2)}%\n(${moduleData[modules[context.dataIndex]].approved})`,
+                        font: { size: 16, weight: 'bold' },
+                        color: '#333'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            callback: (value) => value + '%'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            maxRotation: 45
+                        }
+                    }
+                }
+            }
+        });
+
+        // 2. Dropout Rates (Bar Chart with Module Colors)
+        const dropoutCtx = document.getElementById('dropoutChart').getContext('2d');
+        new Chart(dropoutCtx, {
+            type: 'bar',
+            data: {
+                labels: modules,
+                datasets: [{
+                    label: 'Tasa de Deserción (%)',
+                    data: modules.map(mod => moduleData[mod].dropoutRate),
+                    backgroundColor: colors,
+                    borderColor: colors.map(color => color + 'dd'),
+                    borderWidth: 2,
+                    borderRadius: 8,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: (context) => `${context.parsed.y.toFixed(2)}% (${moduleData[modules[context.dataIndex]].absent} estudiantes)`
+                        }
+                    },
+                    datalabels: {
+                        anchor: 'end',
+                        align: 'top',
+                        formatter: (value, context) => `${value.toFixed(2)}%\n(${moduleData[modules[context.dataIndex]].absent})`,
+                        font: { size: 16, weight: 'bold' },
+                        color: '#333'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: (value) => value + '%'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            maxRotation: 45
+                        }
+                    }
+                }
+            }
+        });
+
+        // 3. Variability (Standard Deviation)
+        const variabilityCtx = document.getElementById('variabilityChart').getContext('2d');
+        new Chart(variabilityCtx, {
+            type: 'radar',
+            data: {
+                labels: modules,
+                datasets: [{
+                    label: 'Desviación Estándar',
+                    data: modules.map(mod => moduleData[mod].stdDev),
+                    borderColor: '#805ad5',
+                    backgroundColor: 'rgba(128, 90, 213, 0.2)',
+                    borderWidth: 3,
+                    pointBackgroundColor: '#805ad5',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    datalabels: {
+                        formatter: (value) => `${value.toFixed(2)}`,
+                        font: { size: 16, weight: 'bold' },
+                        color: '#333'
+                    }
+                },
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 4,
+                        ticks: {
+                            stepSize: 0.5
+                        }
+                    }
+                }
+            }
+        });
+
+        // 4. Student Distribution (Stacked Bar)
+        const distributionCtx = document.getElementById('distributionChart').getContext('2d');
+        new Chart(distributionCtx, {
+            type: 'bar',
+            data: {
+                labels: modules,
+                datasets: [
+                    {
+                        label: 'Aprobados',
+                        data: modules.map(mod => moduleData[mod].approved),
+                        backgroundColor: '#48bb78',
+                        borderRadius: 5
+                    },
+                    {
+                        label: 'Asistentes Reprobados',
+                        data: modules.map(mod => moduleData[mod].attendedFailed),
+                        backgroundColor: '#ed8936',
+                        borderRadius: 5
+                    },
+                    {
+                        label: 'Inasistentes',
+                        data: modules.map(mod => moduleData[mod].absent),
+                        backgroundColor: '#e53e3e',
+                        borderRadius: 5
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    datalabels: {
+                        formatter: (value, context) => {
+                            const total = moduleData[modules[context.dataIndex]].totalStudents;
+                            const percentage = ((value / total) * 100).toFixed(1);
+                            return `${value}\n${percentage}%`;
+                        },
+                        font: { size: 16, weight: 'bold' },
+                        color: '#333',
+                        anchor: 'center',
+                        align: 'center'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            afterLabel: (context) => {
+                                const total = moduleData[modules[context.dataIndex]].totalStudents;
+                                const percentage = ((context.parsed.y / total) * 100).toFixed(1);
+                                return `${percentage}% del total`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        stacked: true,
+                        ticks: {
+                            maxRotation: 45
+                        }
+                    },
+                    y: {
+                        stacked: true,
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // 5. Module 1 Pie Chart (Habilidades Lingüísticas)
+        const module1Ctx = document.getElementById('module1Chart').getContext('2d');
+        new Chart(module1Ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Aprobados', 'Asistentes Reprobados', 'Inasistentes'],
+                datasets: [{
+                    data: [
+                        moduleData['Habilidades Lingüísticas'].approved,
+                        moduleData['Habilidades Lingüísticas'].attendedFailed,
+                        moduleData['Habilidades Lingüísticas'].absent
+                    ],
+                    backgroundColor: ['#48bb78', '#ed8936', '#e53e3e'],
+                    borderWidth: 0,
+                    cutout: '50%'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: (context) => {
+                                const total = moduleData['Habilidades Lingüísticas'].totalStudents;
+                                const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                return `${context.label}: ${context.parsed} (${percentage}%)`;
+                            }
+                        }
+                    },
+                    datalabels: {
+                        formatter: (value, context) => {
+                            const total = moduleData['Habilidades Lingüísticas'].totalStudents;
+                            const percentage = ((value / total) * 100).toFixed(1);
+                            return `${value}\n${percentage}%`;
+                        },
+                        font: { size: 18, weight: 'bold' },
+                        color: '#333'
+                    }
+                }
+            }
+        });
+
+        // 6. Module 2 Pie Chart (Filosofía de las Ciencias)
+        const module3Ctx = document.getElementById('module3Chart').getContext('2d');
+        new Chart(module3Ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Aprobados', 'Asistentes Reprobados', 'Inasistentes'],
+                datasets: [{
+                    data: [
+                        moduleData['Filosofía de las Ciencias'].approved,
+                        moduleData['Filosofía de las Ciencias'].attendedFailed,
+                        moduleData['Filosofía de las Ciencias'].absent
+                    ],
+                    backgroundColor: ['#48bb78', '#ed8936', '#e53e3e'],
+                    borderWidth: 0,
+                    cutout: '50%'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: (context) => {
+                                const total = moduleData['Filosofía de las Ciencias'].totalStudents;
+                                const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                return `${context.label}: ${context.parsed} (${percentage}%)`;
+                            }
+                        }
+                    },
+                    datalabels: {
+                        formatter: (value, context) => {
+                            const total = moduleData['Filosofía de las Ciencias'].totalStudents;
+                            const percentage = ((value / total) * 100).toFixed(1);
+                            return `${value}\n${percentage}%`;
+                        },
+                        font: { size: 18, weight: 'bold' },
+                        color: '#333'
+                    }
+                }
+            }
+        });
+
+        // 7. Module 3 Pie Chart (Herramientas Tecnológicas)
+        const module4Ctx = document.getElementById('module4Chart').getContext('2d');
+        new Chart(module4Ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Aprobados', 'Asistentes Reprobados', 'Inasistentes'],
+                datasets: [{
+                    data: [
+                        moduleData['Herramientas Tecnológicas'].approved,
+                        moduleData['Herramientas Tecnológicas'].attendedFailed,
+                        moduleData['Herramientas Tecnológicas'].absent
+                    ],
+                    backgroundColor: ['#48bb78', '#ed8936', '#e53e3e'],
+                    borderWidth: 0,
+                    cutout: '50%'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: (context) => {
+                                const total = moduleData['Herramientas Tecnológicas'].totalStudents;
+                                const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                return `${context.label}: ${context.parsed} (${percentage}%)`;
+                            }
+                        }
+                    },
+                    datalabels: {
+                        formatter: (value, context) => {
+                            const total = moduleData['Herramientas Tecnológicas'].totalStudents;
+                            const percentage = ((value / total) * 100).toFixed(1);
+                            return `${value}\n${percentage}%`;
+                        },
+                        font: { size: 18, weight: 'bold' },
+                        color: '#333'
+                    }
+                }
+            }
+        });
+
+        // 8. Module 4 Pie Chart (Lenguaje Lógico Matemático)
+        const module5Ctx = document.getElementById('module5Chart').getContext('2d');
+        new Chart(module5Ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Aprobados', 'Asistentes Reprobados', 'Inasistentes'],
+                datasets: [{
+                    data: [
+                        moduleData['Lenguaje Lógico Matemático'].approved,
+                        moduleData['Lenguaje Lógico Matemático'].attendedFailed,
+                        moduleData['Lenguaje Lógico Matemático'].absent
+                    ],
+                    backgroundColor: ['#48bb78', '#ed8936', '#e53e3e'],
+                    borderWidth: 0,
+                    cutout: '50%'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: (context) => {
+                                const total = moduleData['Lenguaje Lógico Matemático'].totalStudents;
+                                const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                return `${context.label}: ${context.parsed} (${percentage}%)`;
+                            }
+                        }
+                    },
+                    datalabels: {
+                        formatter: (value, context) => {
+                            const total = moduleData['Lenguaje Lógico Matemático'].totalStudents;
+                            const percentage = ((value / total) * 100).toFixed(1);
+                            return `${value}\n${percentage}%`;
+                        },
+                        font: { size: 18, weight: 'bold' },
+                        color: '#333'
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
